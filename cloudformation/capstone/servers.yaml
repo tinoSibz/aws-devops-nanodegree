@@ -75,7 +75,9 @@ Resources:
           apt-get install apache2 -y
           systemctl start apache2.service
           cd /var/www/html
-          echo "it works! Udagram, Udacity” > index.html 
+          rm index.html
+          touch index.html
+          echo 'It works. Welcome to Udagram' > index.html 
       SecurityGroups:
         - Ref: WebServerSecGroup
         
