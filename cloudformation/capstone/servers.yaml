@@ -75,7 +75,7 @@ Resources:
           apt-get install apache2 -y
           systemctl start apache2.service
           cd /var/www/html
-          echo “it works! Udagram, Udacity” > index.html 
+          echo " it works! Udagram, Udacity ” > index.html 
       SecurityGroups:
         - Ref: WebServerSecGroup
         
@@ -142,12 +142,18 @@ Resources:
 
 Outputs:
 
-  WebAppLoadBalancer:
-    Description: The public URL of web application. 
+  AppLoadBalancer:
+    Description: Details of the application load balancer
+    Value: !Ref WebAppLoadBalancer
+    Export:
+      Name: !Sub ${ProjectName}-WEB-APP-LB
+
+  AppLoadBalancerURL:
+    Description: The public URL of the APP loadbalancer
     Value: 
       !Join
         - ''
         - - 'http://'
           - !GetAtt WebAppLoadBalancer.DNSName
     Export:
-      Name: !Sub ${ProjectName}-WEB-APP-URL
+      Name: !Sub ${ProjectName}-WEB-LB-URL
