@@ -46,13 +46,13 @@ Resources:
       GroupDescription: Allow http to our hosts and SSH from local only
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 8080
-          ToPort: 8080
+          FromPort: 80
+          ToPort: 80
           CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
+        #- IpProtocol: tcp
+        #  FromPort: 22
+        #  ToPort: 22
+        #  CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 0
@@ -133,9 +133,21 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 8
       HealthyThresholdCount: 3
-      Port: 8080
+      Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 7
       VpcId:
         Fn::ImportValue:
           Fn::Sub: ${ProjectName}-VPCID
+
+Outputs:
+
+  WebAppLoadBalancer:
+    Description: The public URL of web application. 
+    Value: 
+      !Join
+        - ''
+        - - 'http://'
+          - !GetAtt WebAppLoadBalancer.DNSName
+    Export:
+      Name: !Sub ${ProjectName}-WEB-APP-URL
