@@ -1,0 +1,14 @@
+[
+    {
+        "ParameterKey": "ProjectName",
+        "ParameterValue": "udagram"
+    },
+    {
+        "ParameterKey": "ServerAMI",
+        "ParameterValue": "ami-0a6ff40cf915ed748"
+    },
+    {
+        "ParameterKey": "ServerInstanceType",
+        "ParameterValue": "t3.small"
+    }
+]

@@ -6,8 +6,6 @@ The tasks is to provision the required cloud infrastructure and deploy a dummy a
 
 To test, we will deploy sample website files located in a public s3 bucket to an Apache Web Server running on an EC2 instance. 
 
-
-
 ## Virtual Private Cloud Architecture
 
 <div align="center">
@@ -15,7 +13,7 @@ To test, we will deploy sample website files located in a public s3 bucket to an
 </div>
 
 
-## Networking Infrastructure
+### Networking Infrastructure
 
 The following AWS resources will be created:
 
@@ -31,42 +29,58 @@ The following AWS resources will be created:
 
 > To create the network infrastructure run:
 ```bash
-./create.sh udacityp2 network.yaml network-parameters.json af-south-1
+./create.sh udacityp2-network network.yaml network-params.json af-south-1
 ```
 
 > To update the network infrastructure run:
 ```bash
-./update.sh udacityp2 network.yaml network-parameters.json af-south-1
+./update.sh udacityp2-network network.yaml network-params.json af-south-1
 ```
 
+> To delete network infrastructure run:
+```bash
+./delete.sh udacityp2-network
+```
 
-## Server Infrastructure
+### Server Infrastructure
 
 The following AWS resources will be created:
 
 | Resource                                      | Created          | 
 |:----------------------------------------------|:----------------:|
-|Mulitple VPC Security Groups                   |                  |
-|Bastion Auto Scaling Group (launching no instances) - in public subnets (public)  |              |     
-|Amazon Application Load Balancer (ALB) - in public subnets (public)               |              | 
-|Amazon CloudWatch dashboard                                                       |              |
+|Mulitple VPC Security Groups                   |:heavy_check_mark:|    
+|Amazon Application Load Balancer (ALB)(public) |:heavy_check_mark:| 
+|Amazon CloudWatch Dashboard                    |:heavy_check_mark:|
 
+> To create the server infrastructure run:
+```bash
+./create.sh udacityp2-servers servers.yaml server-params.json af-south-1
+```
+
+> To update the server infrastructure run:
+```bash
+./update.sh udacityp2-servers servers.yaml server-params.json af-south-1
+```
+
+> To delete server infrastructure run:
+```bash
+./delete.sh udacityp2-servers
+```
 
 ## Troubleshooting
-
-### Deleting all Resources
-
-> To delete all infrastructure run:
-```bash
-./delete.sh udacityp2
-```
 
 ### Permissions
 
 While running the AWS commands using either create.sh or update.sh file, if you face permission denied error, then you will have to grant the execute permission to the owner (yourself) explicitly as:
 
 ```bash
+chmod +x create.sh
 chmod +x update.sh 
-chmod +x create.sh 
-
+chmod +x delete.sh
 ```
+
+### Deploying Bastion Host SSH Server
+
+
+### References
+- [IPv4SubnetCreator](https://network00.com/NetworkTools/IPv4SubnetCreator/)

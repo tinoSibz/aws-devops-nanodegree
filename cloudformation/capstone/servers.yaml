@@ -1,0 +1,141 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create EC2 Servers
+
+Parameters:
+
+  ProjectName:
+    Type: String
+    Description: Unique ID for this project
+
+  ServerAMI:
+    Type: String
+    Description: The machine image for web servers
+    Default: ami-0a6ff40cf915ed748
+
+  ServerInstanceType:
+    Type: String
+    Description: The type of machine to be use (vCPU's, RAM)
+    Default: t3.small
+
+Resources:
+  
+  LBSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue: 
+          !Sub "${ProjectName}-VPCID"
+      GroupDescription: Allow http to Load Balancer
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  WebServerSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue: 
+          !Sub "${ProjectName}-VPCID"
+      GroupDescription: Allow http to our hosts and SSH from local only
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
+
+  WebAppLaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: !Ref ServerAMI
+      InstanceType: !Ref ServerInstanceType
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sdk"
+          Ebs:
+            VolumeSize: 10
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt-get update -y
+          apt-get install apache2 -y
+          systemctl start apache2.service
+          cd /var/www/html
+          echo “it works! Udagram, Udacity” > index.html 
+      SecurityGroups:
+        - Ref: WebServerSecGroup
+        
+  WebAppScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        - Fn::ImportValue:
+            !Sub "${ProjectName}-PRIVATE-SUBNETS"
+      LaunchConfigurationName: 
+        Ref: WebAppLaunchConfig
+      MinSize: 2
+      MaxSize: 4
+      TargetGroupARNs: 
+        - Ref: WebAppTargetGroup
+      HealthCheckGracePeriod: 60
+      HealthCheckType: ELB
+  
+  WebAppLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets:
+        - Fn::ImportValue: !Sub ${ProjectName}-PUBLIC-SUBNET-AZ1
+        - Fn::ImportValue: !Sub ${ProjectName}-PUBLIC-SUBNET-AZ2
+      SecurityGroups:
+        - !Ref LBSecGroup
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref WebAppLoadBalancer
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref WebAppTargetGroup
+      Port: 80
+      Protocol: HTTP
+
+  ALBListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref Listener
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref WebAppTargetGroup
+      Priority: 1
+      Conditions:
+        - Field: path-pattern
+          Values: [/]
+
+  WebAppTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 8
+      HealthyThresholdCount: 3
+      Port: 8080
+      Protocol: HTTP
+      UnhealthyThresholdCount: 7
+      VpcId:
+        Fn::ImportValue:
+          Fn::Sub: ${ProjectName}-VPCID
