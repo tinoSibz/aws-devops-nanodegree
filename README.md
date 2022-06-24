@@ -1,13 +1,14 @@
-# Udacity NanoDegree Projects
-> This repository contains Udacity's nanodegree projects completed by me.
+# AWS DevOps Nanodegree
 
+> This repository contains Udacity projects completed by me in fulfillment of the 
+[Cloud DevOps Engineer Nanodegree](cloud_devops_nanodegree)
 
-### [Cloud DevOps Engineer Nanodegree](cloud_devops_nanodegree)
+<div align="center">
+<img src="img/devops-process.png" alt="Logo">
+</div>
 
-| Project                                                                                                                   |Status         |
-|:--------------------------------------------------------------------------------------------------------------------------|:-------------:|
-| 1: Deploy Static Website on AWS                                  |               |
-| [2: Deploy a High-Availability Web App using CloudFormation](cloudformation/capstone)            |               |
-| 3: Build and Automated CI/DC Pipeline                               |               |
-| 4: Operationalize a Machine Learning Microservice API|               |
-| 5: Capstone Project                                                  |               |
+## Projects
+
+1. [Provisioning Infrastructure as Code using AWS CloudFormation](/iac/)
+2. [Implementing CI/CD Pipelines using Ansible and Circle CI](/cicd/)
+3. [Operationalizing Microservices at Scale using Docker and Kubernetes](/microservices/)

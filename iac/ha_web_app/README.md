@@ -1,4 +1,4 @@
-# Capstone Project
+# High-Availability Web Application
 
 ## Project Background
 
@@ -9,7 +9,7 @@ To test, we will deploy sample website files located in a public s3 bucket to an
 ## Virtual Private Cloud Architecture
 
 <div align="center">
-<img src="img/architecture-diagram.png" alt="Logo">
+<img src="../../img/architecture-diagram.png" alt="Logo">
 </div>
 
 
